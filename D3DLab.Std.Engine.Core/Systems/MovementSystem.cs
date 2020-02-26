@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Input;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Components.Movements;
 using D3DLab.Std.Engine.Core.Ext;
@@ -17,34 +20,64 @@ namespace D3DLab.Std.Engine.Core.Systems {
         public Vector3 CapturePointWorld { get; set; }
     }
 
-    public class TemporaryManipulateTransformKepperComponent : TransformComponent {
-        readonly TransformComponent original;
+    public struct TemporaryManipulateTransformKepperComponent : IGraphicComponent {
 
-        private Matrix4x4 temporary;
-        public override Matrix4x4 MatrixWorld {
-            get => temporary;
+        public static TemporaryManipulateTransformKepperComponent Create(TransformComponent original) {
+            return new TemporaryManipulateTransformKepperComponent {
+                Tag = new ElementTag(Guid.NewGuid().ToString()),
+                Original = original,
+                temporary = original.MatrixWorld,
+
+                IsModified = true,
+                IsValid = true,
+            };
+        }
+
+        public static TemporaryManipulateTransformKepperComponent Create(Matrix4x4 temporary, TransformComponent original) {
+            return new TemporaryManipulateTransformKepperComponent {
+                Tag = new ElementTag(Guid.NewGuid().ToString()),
+                Original = original,
+                temporary = temporary,
+
+                IsModified = true,
+                IsValid = true,
+            };
+        }
+
+        public TransformComponent Original { get; private set; }
+        public Matrix4x4 MatrixWorld {
             set {
                 temporary = value;
-                IsModified = true;
             }
+            get => temporary;
         }
 
-        public TemporaryManipulateTransformKepperComponent(TransformComponent original) {
-            this.original = original;
-            temporary = original.MatrixWorld;
-        }
+        Matrix4x4 temporary;
+       
+
+        public ElementTag Tag { get; private set; }
+        public ElementTag EntityTag { get; set; }
+        public bool IsModified { get; set; }
+        public bool IsValid { get; private set; }
+        public bool IsDisposed { get; private set; }
 
         public TransformComponent Apply() {
             //original.MatrixWorld *= temporary;
-            return original;
+            return Original;
+        }
+
+        public void Dispose() {
+            IsDisposed = true;
         }
     }
 
 
-    public class MovementSystem : BaseEntitySystem, IGraphicSystem {
+    public class MovementSystem : BaseEntitySystem, IGraphicSystem, IGraphicSystemContextDependent {
+        public IContextState ContextState { get; set; }
 
-        protected override void Executing(SceneSnapshot snapshot) {
-            var emanager = snapshot.ContextState.GetEntityManager();
+        protected override void Executing(ISceneSnapshot ss) {
+            var snapshot = (SceneSnapshot)ss;
+            var emanager = ContextState.GetEntityManager();
 
             //foreach (var ev in snapshot.Snapshot.Events) {
             //    switch (ev) {
@@ -59,15 +92,15 @@ namespace D3DLab.Std.Engine.Core.Systems {
                 foreach (var com in entity.GetComponents()) {
                     switch (com) {
                         case MovementComponent move:
-                            move.Execute(new Handlers(entity, snapshot));
+                            move.Execute(new Handlers(entity, snapshot, ContextState));
                             break;
 
                         case CapturedToManipulateComponent capture:
-                            var istate = snapshot.Snapshot.CurrentInputState;
+                            var istate = snapshot.InputSnapshot.CurrentInputState;
                             var isManiputating = entity.GetComponents<TemporaryManipulateTransformKepperComponent>();
-                            var left = istate.ButtonsStates[Input.GeneralMouseButtons.Left];
+                            var left = istate.ButtonsStates[GeneralMouseButtons.Left];
                             
-                            if (left.Condition == Input.ButtonStates.Released) {
+                            if (left.Condition == ButtonStates.Released) {
                                 entity.RemoveComponent(capture);
                                 //apply transformation
                                 var origin = isManiputating.Single().Apply();
@@ -79,7 +112,7 @@ namespace D3DLab.Std.Engine.Core.Systems {
 
                             if (!isManiputating.Any()) {//start manipulate
                                 var orig = entity.GetComponent<TransformComponent>();
-                                var temp = new TemporaryManipulateTransformKepperComponent(orig);
+                                var temp = TemporaryManipulateTransformKepperComponent.Create(orig);
                                 entity.RemoveComponent(orig);
                                 entity.AddComponent(temp);
                                 isManiputating = new[] { temp };
@@ -105,6 +138,8 @@ namespace D3DLab.Std.Engine.Core.Systems {
 
                             transform.MatrixWorld = Matrix4x4.CreateTranslation(moveVector);
 
+                            entity.UpdateComponent(transform);
+
                             //System.Diagnostics.Trace.WriteLine($" {captutedPointW} | {endPoint} | {moveVector}");
 
                             snapshot.Notifier.NotifyChange(transform);
@@ -120,8 +155,8 @@ namespace D3DLab.Std.Engine.Core.Systems {
             readonly GraphicEntity entity;
             readonly SceneSnapshot snapshot;
 
-            public Handlers(GraphicEntity entity, SceneSnapshot snapshot) {
-                this.emanager = snapshot.ContextState.GetEntityManager();
+            public Handlers(GraphicEntity entity, SceneSnapshot snapshot, IContextState context) {
+                this.emanager = context.GetEntityManager();
                 this.entity = entity;
                 this.snapshot = snapshot;
             }

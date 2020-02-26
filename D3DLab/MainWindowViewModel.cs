@@ -3,12 +3,17 @@ using D3DLab.Debugger.Modules.OBJFileFormat;
 using D3DLab.Debugger.Presentation.ScriptConsole;
 using D3DLab.Debugger.Presentation.SystemList;
 using D3DLab.Debugger.Windows;
+using D3DLab.ECS;
+using D3DLab.ECS.Context;
+using D3DLab.ECS.Ext;
 using D3DLab.Parser;
 using D3DLab.Plugin.Contracts.Parsers;
 using D3DLab.Plugins;
 using D3DLab.Std.Engine.Core;
+using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.MeshFormats;
+using D3DLab.Std.Engine.Core.Utilities;
 using D3DLab.Visualization;
 using D3DLab.Wpf.Engine.App;
 using D3DLab.Wpf.Engine.App.GameObjects;
@@ -21,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -29,7 +35,7 @@ namespace D3DLab {
     public interface IDropFiles {
         void Dropped(string[] files);
     }
-   
+
     public sealed class MainWindowViewModel : IDropFiles, IFileLoader {
 
         #region commands
@@ -108,6 +114,44 @@ namespace D3DLab {
                 main.items.Add(new LoadedItem(main, obj));
             }
         }
+
+        class PhysicsTestCommand : ICommand {
+            private MainWindowViewModel main;
+            readonly Random r;
+            LoadedItem stat;
+
+            public PhysicsTestCommand(MainWindowViewModel mainWindowViewModel) {
+                this.main = mainWindowViewModel;
+                r = new Random((int)DateTime.Now.Ticks);
+            }
+
+            public event EventHandler CanExecuteChanged = (s, r) => { };
+            public bool CanExecute(object parameter) => true;
+
+            public void Execute(object parameter) {
+                Task.Run(() => {
+                    var count = 1;// 00;
+                    while (count --> 0) {//64, 4, 32
+                        Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                        var max = RandomUtil.NextVector3(r, new Vector3(0, 0, 0), new Vector3(10, 0, 10));
+                        PhysicsObjectTest.Create(main.context.GetEntityManager(),
+                                                new BoundingBox(
+                                                    new Vector3(max.X - 10, 90, max.Y - 10),
+                                                    new Vector3(max.X, 100, max.Z)),
+                                                V4Colors.NextColor(r));
+                    }
+                });
+                //if (stat.IsNull()) {
+                //    stat = new LoadedItem(main, PhysicsObjectTest.CreateStatic(main.context.GetEntityManager(),
+                //        new BoundingBox(new Vector3(-50, -50, -50), new Vector3(50, 50, 50))));
+                //    main.items.Add(stat);
+
+                //    PhysicsObjectTest.CreateStaticAABB(main.context.GetEntityManager(),
+                //        new BoundingBox(new Vector3(-150, -30, -150), new Vector3(150, -15, 150)));
+                //}
+            }
+        }
+
         public class RenderModeSwitherCommand : Debugger.BaseWPFCommand<Debugger.Infrastructure.IVisualTreeEntityItem> {
             readonly IContextState context;
 
@@ -134,10 +178,10 @@ namespace D3DLab {
 
             public LoadedItem() { }
 
-            public GameObject GameObj { get; protected set; }
+            public Std.Engine.Core.GeometryGameObject GameObj { get; protected set; }
             protected readonly MainWindowViewModel main;
 
-            public LoadedItem(MainWindowViewModel main, GameObject gobj) {
+            public LoadedItem(MainWindowViewModel main, Std.Engine.Core.GeometryGameObject gobj) {
                 this.main = main;
                 this.GameObj = gobj;
                 VisiblityChanged = new Command(this);
@@ -147,7 +191,7 @@ namespace D3DLab {
             }
 
             protected virtual void OnOpenProperties() {
-                      
+
             }
 
             private void OnLookAt() {
@@ -196,7 +240,7 @@ namespace D3DLab {
             }
         }
 
-        
+
 
         public class ImportFileLoadedItem : LoadedItem {
             readonly ImportFileInfo info;
@@ -227,13 +271,13 @@ namespace D3DLab {
             DateTime lastWriteTime;
             private void OnFileChanged(object sender, FileSystemEventArgs e) {
                 var lastTime = File.GetLastWriteTime(info.File.FullName);
-                if (e.FullPath == info.File.FullName && lastWriteTime < lastTime) {                    
+                if (e.FullPath == info.File.FullName && lastWriteTime < lastTime) {
                     Thread.Sleep(100);
                     //reset.Wait();
                     //reset.Reset();
                     Stream stream = null;
                     var tries = 3;
-                    while (tries --> 0) {
+                    while (tries-- > 0) {
                         try {
                             File.Copy(info.File.FullName, tempFileName, true);
                             stream = File.OpenRead(tempFileName);
@@ -280,10 +324,12 @@ namespace D3DLab {
         public ScriptsConsoleVM ScriptsConsole { get; }
 
         public ICommand LoadDuck { get; set; }
+        public ICommand PhysicsTest { get; set; }
+
         public ICommand MoveToCenterWorld { get; }
         public ICommand ShowAxis { get; }
         public ICommand ClearConsoleOutput { get; }
-        
+
 
 
         public ICollectionView Items { get; set; }
@@ -294,6 +340,8 @@ namespace D3DLab {
 
         public MainWindowViewModel() {
             LoadDuck = new LoadCommand(this);
+            PhysicsTest = new PhysicsTestCommand(this);
+
             MoveToCenterWorld = new MoveToCenterWorldCommand(this);
             ShowAxis = new ShowAxisCommand(this);
             ClearConsoleOutput = new ClearConsoleOutputCommand(this);
@@ -373,10 +421,10 @@ namespace D3DLab {
         }
 
         void ObjDetailsRefreshEntity(IEnumerable<ObjGroupsViewModel.ColorFilterViewItem> obj) {
-        
+
         }
 
 
         #endregion
-    }   
+    }
 }

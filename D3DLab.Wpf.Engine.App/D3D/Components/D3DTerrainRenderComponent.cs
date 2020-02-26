@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
 using System.Threading.Tasks;
+using D3DLab.ECS;
+using D3DLab.ECS.Common;
 using D3DLab.SDX.Engine.Components;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
@@ -82,8 +84,10 @@ namespace D3DLab.Wpf.Engine.App.D3D.Components {
             }
         }
 
-
         public Vector2[] NormalMapTexCoordinates { get; set; }
+
+        public float MaxHeight { get; set; }
+        public float MinHeight { get; set; }
 
         public TerrainCell[] Cells;
 
@@ -137,19 +141,31 @@ namespace D3DLab.Wpf.Engine.App.D3D.Components {
             return cell;
         }
 
-        public Matrix4x4 GetTransfromToMap(ref Ray ray) {
+        public Matrix4x4 GetTransfromToMap(ref Ray rayLocal) {
             var m = Matrix4x4.Identity;
 
-            var hit = Tree.HitLocalBy(ray);
-            if (hit.IsHitted) {
-                return Matrix4x4.CreateTranslation(hit.Point - ray.Origin);
+            if (!Tree.IsBuilt) {
+                return m;
             }
-            hit = Tree.HitLocalBy(ray.Inverted());
+
+            var moveto = rayLocal.Origin;
+
+            var hit = Tree.HitLocalBy(rayLocal);
             if (hit.IsHitted) {
-                return Matrix4x4.CreateTranslation(hit.Point - ray.Origin);
+                moveto.Y = hit.Point.Y;
+                return Matrix4x4.CreateTranslation(moveto - rayLocal.Origin);
+            }
+            hit = Tree.HitLocalBy(rayLocal.Inverted());
+            if (hit.IsHitted) {
+                moveto.Y = hit.Point.Y;
+                return Matrix4x4.CreateTranslation(moveto - rayLocal.Origin);
             }
 
             return m;
+        }
+
+        protected override BoundingBox CalcuateBox() {
+            return base.CalcuateBox();
         }
     }
 
@@ -174,4 +190,13 @@ namespace D3DLab.Wpf.Engine.App.D3D.Components {
             base.Dispose();
         }
     }
+
+    class ClipmapsTerrainComponent : GraphicComponent {
+        public float ZScaleFactor;
+        public Vector4 ScaleFactor;
+        public Vector4 FineTextureBlockOrigin;
+        public Vector2 AlphaOffset;
+        public float OneOverWidth;
+    }
+
 }

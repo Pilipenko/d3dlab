@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Components.Movements;
 using D3DLab.Std.Engine.Core.Utilities;
 
 namespace D3DLab.Std.Engine.Core.GameObjects {
-    public class CompositeGameObject : GameObject {
+    public class CompositeGameObject : GeometryGameObject {
         public List<ElementTag> Tags { get; }
 
         public CompositeGameObject(IEnumerable<ElementTag> tags) : this(tags, "Group") {

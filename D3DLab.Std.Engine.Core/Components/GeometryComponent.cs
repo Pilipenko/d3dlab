@@ -1,4 +1,5 @@
-﻿using D3DLab.Std.Engine.Core.Ext;
+﻿using D3DLab.ECS;
+using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Utilities;
 using g3;
 using System;
@@ -79,15 +80,19 @@ namespace D3DLab.Std.Engine.Core.Components {
 
         public HitResultLocal HitLocalBy(Ray rayLocal) {
             var res = new HitResultLocal();
-            int hit_tid = TreeLocal.FindNearestHitTriangle(rayLocal.g3Rayf);
-            if (hit_tid == DMesh3.InvalidID) {
-                return res;
-            }
+            try {
+                int hit_tid = TreeLocal.FindNearestHitTriangle(rayLocal.g3Rayf);
+                if (hit_tid == DMesh3.InvalidID) {
+                    return res;
+                }
 
-            var intr = MeshQueries.TriangleIntersection(DMeshLocal, hit_tid, rayLocal.g3Rayf);
-            res.Distance = (float)rayLocal.g3Rayd.Origin.Distance(rayLocal.g3Rayd.PointAt(intr.RayParameter));
-            res.Point = intr.Triangle.V1.ToVector3();
-            res.IsHitted = true;
+                var intr = MeshQueries.TriangleIntersection(DMeshLocal, hit_tid, rayLocal.g3Rayf);
+                res.Distance = (float)rayLocal.g3Rayd.Origin.Distance(rayLocal.g3Rayd.PointAt(intr.RayParameter));
+                res.Point = intr.Triangle.V1.ToVector3();
+                res.IsHitted = true;
+            }catch(Exception ex) {
+                System.Diagnostics.Trace.WriteLine(ex.Message);
+            }
 
             return res;
         }
@@ -148,7 +153,7 @@ namespace D3DLab.Std.Engine.Core.Components {
 
     public class SimpleGeometryComponent : GeometryComponent, IGeometryComponent {
         protected override BoundingBox CalcuateBox() {
-            return BoundingBox.Zero;
+            return BoundingBox.CreateFromVertices(Positions.ToArray());
         }
     }
 

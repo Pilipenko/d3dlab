@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using System.Numerics;
 
 namespace D3DLab.Std.Engine.Core.Components.Movements {
     public abstract class FollowUpTargetComponent : MovementComponent {
@@ -17,7 +19,7 @@ namespace D3DLab.Std.Engine.Core.Components.Movements {
 
             var worldMatrix = Matrix4x4.CreateTranslation(cameraPostion.X, cameraPostion.Y, cameraPostion.Z);
 
-            follower.GetComponent<TransformComponent>().MatrixWorld = worldMatrix;
+            follower.UpdateComponent(TransformComponent.Create(worldMatrix));
         }
 
         public override bool IsTarget(GraphicEntity target) {

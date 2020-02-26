@@ -1,8 +1,6 @@
-﻿using D3DLab.Std.Engine.Core.Shaders;
+﻿using D3DLab.ECS.Shaders;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace D3DLab.SDX.Engine.Shader {
     public struct D3DShaderInfo : IShaderInfo {

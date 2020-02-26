@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using g3;
@@ -124,7 +125,7 @@ namespace D3DLab.Std.Engine.Core.Utilities {
 
         public BoundingBox(Vector3 min, Vector3 max) {
             Minimum = min;
-            Maximum = max;
+            Maximum = max; 
             boxf = new AxisAlignedBox3f(Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
             boxd = new AxisAlignedBox3d(Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
             corners = null;
@@ -140,8 +141,8 @@ namespace D3DLab.Std.Engine.Core.Utilities {
             Minimum = box3d.Min.ToVector3();
             Maximum = box3d.Max.ToVector3();
             boxf = new AxisAlignedBox3f(Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
-            boxd = box3d;
-            corners = null;
+            boxd = box3d; 
+             corners = null;
         }
 
         public BoundingBox Merge(BoundingBox box) {
@@ -171,6 +172,10 @@ namespace D3DLab.Std.Engine.Core.Utilities {
             var b = Statics.Collision.Intersects(ref this, ref ray, out distance);
             return b;
         }
+        public bool Intersects(ref Ray ray, out Vector3 p) {
+            return Statics.Collision.Intersects(ref this, ref ray, out p);
+        }
+
         public bool Intersects(ref BoundingBox bb) {
             return boxf.Intersects(bb.boxf);
         }
@@ -201,6 +206,8 @@ namespace D3DLab.Std.Engine.Core.Utilities {
                 min = Vector3.Min(min, Vector3.Transform(cornersPtr[i], mat));
                 max = Vector3.Max(max, Vector3.Transform(cornersPtr[i], mat));
             }
+
+        //    box.boxf.Translate(new Vector3f(mat.Translation.X, mat.Translation.Y, mat.Translation.Z));
 
             return new BoundingBox(min, max);
         }
@@ -332,6 +339,13 @@ namespace D3DLab.Std.Engine.Core.Utilities {
             corners.FarTopRight = new Vector3(Maximum.X, Maximum.Y, Minimum.Z);
 
             return corners;
+        }
+
+        public Vector3 Size() {
+            return new Vector3(
+                Math.Abs(Minimum.X - Maximum.X),
+                Math.Abs(Minimum.Y - Maximum.Y),
+                Math.Abs(Minimum.Z - Maximum.Z));
         }
 
         public bool ContainsNaN() {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using D3DLab.Std.Engine.Core.Shaders;
+using D3DLab.ECS.Shaders;
 
 namespace D3DLab.SDX.Engine.Shader {
     public class CombinedShadersLoader {

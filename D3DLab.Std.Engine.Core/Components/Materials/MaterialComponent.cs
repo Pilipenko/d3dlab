@@ -1,11 +1,11 @@
-﻿using System.IO;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using System.IO;
 using System.Numerics;
 
 namespace D3DLab.Std.Engine.Core.Components.Materials {
        
-    public abstract class MaterialComponent : GraphicComponent {
-
-    }
+  
 
     public class GradientMaterialComponent : MaterialComponent {
         public Vector4 Apex { get; set; }
@@ -20,24 +20,9 @@ namespace D3DLab.Std.Engine.Core.Components.Materials {
         }
     }
 
-    public interface IColoringMaterialComponent : IGraphicComponent {
-        Vector4 GetVertexColor(int vertexInd);
-    }
+    
 
-    public class ColorComponent : MaterialComponent, IColoringMaterialComponent {
-        private Vector4 color;
-        public Vector4 Color {
-            get => color;
-            set {
-                color = value;
-                IsModified = true;
-            }
-        }
-
-        public Vector4 GetVertexColor(int vertexInd) {
-            throw new System.NotImplementedException();
-        }
-    }
+    
     
 
     public class MaterialComponent1 : GraphicComponent {
@@ -48,16 +33,5 @@ namespace D3DLab.Std.Engine.Core.Components.Materials {
 
     }
 
-    public class TexturedMaterialComponent : MaterialComponent {
-        /// <summary>
-        /// Order is important! the same order will be setted in shader recources
-        /// </summary>
-        public FileInfo[] Images { get; }
-
-        public TexturedMaterialComponent(params FileInfo[] image) {
-            Images = image;
-        }
-
-
-    }
+   
 }

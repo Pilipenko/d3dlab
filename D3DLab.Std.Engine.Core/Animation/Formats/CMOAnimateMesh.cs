@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using D3DLab.ECS;
 using D3DLab.Std.Engine.Core.Common;
 
 namespace D3DLab.Std.Engine.Core.Animation.Formats {

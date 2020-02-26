@@ -16,6 +16,10 @@ using D3DLab.Std.Engine.Core.Components;
 using SharpDX.Direct3D11;
 using D3DLab.Std.Engine.Core.Systems;
 using D3DLab.Std.Engine.Core.Utilities;
+using D3DLab.Physics.Engine;
+using D3DLab.ECS;
+using D3DLab.ECS.Ext;
+using D3DLab.ECS.Components;
 
 namespace D3DLab.Wpf.Engine.App.GameObjects {
     
@@ -51,6 +55,7 @@ namespace D3DLab.Wpf.Engine.App.GameObjects {
                 MipLodBias = 0.0f
             });
 
+            var moveToZ = Matrix4x4.CreateTranslation(Vector3.UnitY * 20);
             var rotateToY = Matrix4x4.CreateRotationX(-90f.ToRad());
 
             manager.CreateEntity(tag)
@@ -59,16 +64,17 @@ namespace D3DLab.Wpf.Engine.App.GameObjects {
                     render,
                     animesh,
                     texture,
-                    new TransformComponent(){ MatrixWorld = rotateToY }
+                    TransformComponent.Create(rotateToY * moveToZ),
+                   // PhysicalComponentFactory.CreateAABB(),
                 });
 
            // new SingleGameObject( EntityBuilders.BuildMeshElement(manager, pos, indx, V4Colors.Red),"test");
-
+           
             return new AnimCMOObject(tag);
         }
 
         public override void Hide(IEntityManager manager) {
-
+           
         }
 
         public override void Show(IEntityManager manager) {

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using D3DLab.ECS.Input;
 
 namespace D3DLab.Wpf.Engine.App.Input {
     public class WPFInputPublisher : BaseInputPublisher {
@@ -197,8 +198,8 @@ namespace D3DLab.Wpf.Engine.App.Input {
         public static System.Numerics.Vector2 ToNumericsV2(this System.Windows.Point p) {
             return new System.Numerics.Vector2((float)p.X, (float)p.Y);
         }
-        public static D3DLab.Std.Engine.Core.Input.WindowPoint ToWindowPoint(this System.Windows.Point p) {
-            return new D3DLab.Std.Engine.Core.Input.WindowPoint((int)p.X, (int)p.Y);
+        public static WindowPoint ToWindowPoint(this System.Windows.Point p) {
+            return new WindowPoint((int)p.X, (int)p.Y);
         }
     }
 }

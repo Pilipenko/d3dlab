@@ -5,6 +5,9 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Utilities;
@@ -47,11 +50,11 @@ namespace D3DLab.Std.Engine.Core.Common {
                                     var tr = context
                                         .GetComponentManager()
                                         .GetComponents<TransformComponent>(cc.EntityTag);
-                                    var box = g.Box;
+                                    var b = g.Box;
                                     if (tr.Any()) {
-                                        box = box.Transform(tr.Single().MatrixWorld);
+                                        b = b.Transform(tr.Single().MatrixWorld);
                                     }
-                                    _.Add(box, g.EntityTag);
+                                    _.Add(b, g.EntityTag);
                                     _.isActualStateDrawed = false;
                                 }, x.Result);
                             });

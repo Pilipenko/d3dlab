@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Ext;
 
 namespace D3DLab.Debugger.IDE {

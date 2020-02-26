@@ -1,5 +1,7 @@
 ﻿using D3DLab.Debugger.Presentation.PropertiesEditor;
 using D3DLab.Debugger.Windows;
+using D3DLab.ECS;
+using D3DLab.ECS.Shaders;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Shaders;
 using System;
@@ -25,7 +27,7 @@ namespace D3DLab.Debugger.Presentation.SystemList {
         public SystemItemViewModel(IGraphicSystem system) {
             this.system = system;
             Header = system.ToString().Split('.').Last();
-            IsShaderEditable = system is Std.Engine.Core.Shaders.IShadersContainer;
+            IsShaderEditable = system is IShadersContainer;
         }
 
         public IGraphicSystem GetOriginSystem() {

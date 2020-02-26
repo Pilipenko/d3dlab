@@ -1,0 +1,171 @@
+﻿<Window x:Class="D3DLab.Viewer.Presentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+         xmlns:syncfusionskin ="clr-namespace:Syncfusion.SfSkinManager;assembly=Syncfusion.SfSkinManager.WPF"
+        xmlns:local="clr-namespace:D3DLab.Viewer.Presentation"
+        mc:Ignorable="d"
+        Background="Black"
+        Title="MainWindow" Height="450" Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- TOP -->
+        <Border  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Opacity="0.5" Background="{StaticResource BlackBackgroundColor}" BorderThickness="0,0,0,1"
+                         BorderBrush="White">
+            <DockPanel Height="50" HorizontalAlignment="Center" >
+                <Button Margin="5,5,5,5" Style="{StaticResource ImageButton}">
+                    <Canvas Width="40" Margin="3,2,0,0">
+                        <Canvas.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1.4" ScaleY="1.4" />
+                            </TransformGroup>
+                        </Canvas.RenderTransform>
+                        <Path Fill="White" Data="M7.52 21.48C4.25 19.94 1.91 16.76 1.55 13H.05C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.33 1.32zm.89-6.52c-.19 0-.37-.03-.52-.08-.16-.06-.29-.13-.4-.24-.11-.1-.2-.22-.26-.37-.06-.14-.09-.3-.09-.47h-1.3c0 .36.07.68.21.95.14.27.33.5.56.69.24.18.51.32.82.41.3.1.62.15.96.15.37 0 .72-.05 1.03-.15.32-.1.6-.25.83-.44s.42-.43.55-.72c.13-.29.2-.61.2-.97 0-.19-.02-.38-.07-.56-.05-.18-.12-.35-.23-.51-.1-.16-.24-.3-.4-.43-.17-.13-.37-.23-.61-.31.2-.09.37-.2.52-.33.15-.13.27-.27.37-.42.1-.15.17-.3.22-.46.05-.16.07-.32.07-.48 0-.36-.06-.68-.18-.96-.12-.28-.29-.51-.51-.69-.2-.19-.47-.33-.77-.43C9.1 8.05 8.76 8 8.39 8c-.36 0-.69.05-1 .16-.3.11-.57.26-.79.45-.21.19-.38.41-.51.67-.12.26-.18.54-.18.85h1.3c0-.17.03-.32.09-.45s.14-.25.25-.34c.11-.09.23-.17.38-.22.15-.05.3-.08.48-.08.4 0 .7.1.89.31.19.2.29.49.29.86 0 .18-.03.34-.08.49-.05.15-.14.27-.25.37-.11.1-.25.18-.41.24-.16.06-.36.09-.58.09H7.5v1.03h.77c.22 0 .42.02.6.07s.33.13.45.23c.12.11.22.24.29.4.07.16.1.35.1.57 0 .41-.12.72-.35.93-.23.23-.55.33-.95.33zm8.55-5.92c-.32-.33-.7-.59-1.14-.77-.43-.18-.92-.27-1.46-.27H12v8h2.3c.55 0 1.06-.09 1.51-.27.45-.18.84-.43 1.16-.76.32-.33.57-.73.74-1.19.17-.47.26-.99.26-1.57v-.4c0-.58-.09-1.1-.26-1.57-.18-.47-.43-.87-.75-1.2zm-.39 3.16c0 .42-.05.79-.14 1.13-.1.33-.24.62-.43.85-.19.23-.43.41-.71.53-.29.12-.62.18-.99.18h-.91V9.12h.97c.72 0 1.27.23 1.64.69.38.46.57 1.12.57 1.99v.4zM12 0l-.66.03 3.81 3.81 1.33-1.33c3.27 1.55 5.61 4.72 5.96 8.48h1.5C23.44 4.84 18.29 0 12 0z"/>
+                    </Canvas>
+                </Button>
+                <Button Style="{StaticResource ImageButton}" Margin="0,5,0,5" Command="{Binding MoveToCenterWorld}">
+                    <Canvas Width="40" Margin="5,2,0,0">
+                        <Canvas.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1.4" ScaleY="1.4" />
+                            </TransformGroup>
+                        </Canvas.RenderTransform>
+                        <Path Fill="White" Data="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/>
+                        <Path Data="M0 0h24v24H0z" />
+                    </Canvas>
+                </Button>
+                <Button Style="{StaticResource ImageButton}" Margin="5,5,0,5" Command="{Binding ShowAxis}">
+                    <Grid>
+                        <Canvas Width="40" Margin="5,2,0,0">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1.4" ScaleY="1.4" />
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                            <Path Fill="White" Data="M17 20.41L18.41 19 15 15.59 13.59 17 17 20.41zM7.5 8H11v5.59L5.59 19 7 20.41l6-6V8h3.5L12 3.5 7.5 8z"/>
+                        </Canvas>
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource ImageButton}" Margin="5,5,0,5" Command="{Binding CameraFocusToAll}">
+                    <Grid>
+                        <Canvas Width="40" Margin="5,2,0,0">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1.4" ScaleY="1.4" />
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                            <Path Fill="White" Data="M15.54 5.54L13.77 7.3 12 5.54 10.23 7.3 8.46 5.54 12 2zm2.92 10l-1.76-1.77L18.46 12l-1.76-1.77 1.76-1.77L22 12zm-10 2.92l1.77-1.76L12 18.46l1.77-1.76 1.77 1.76L12 22zm-2.92-10l1.76 1.77L5.54 12l1.76 1.77-1.76 1.77L2 12z"/>
+                            <Ellipse Fill="White" Height="6" Width="6" Canvas.Top="9" Canvas.Left="9" />
+                        </Canvas>
+                    </Grid>
+                </Button>
+
+            </DockPanel>
+        </Border>
+
+
+        <!-- CENTER -->
+        <!-- 
+        <syncfusion:TabControlExt Grid.Row="1" Grid.Column="1" CloseButtonType="Both" syncfusionskin:SfSkinManager.VisualStyle="Blend"
+                                  ShowTabListContextMenu="False" DragMarkerColor="Black"
+                                  TabItemSize="ShrinkToFit">
+            <syncfusion:TabItemExt Header="tabItem1" IsSelected="True" CloseButtonState="Collapsed" AllowPin="True" ShowPin="True">
+                <TextBlock  Text="This is the first tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem2" AllowPin="True">
+                <TextBlock  Text="This is the second tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem3" AllowPin="False" ShowPin="True">
+                <TextBlock Text="This is the third tab item." />
+            </syncfusion:TabItemExt>
+        </syncfusion:TabControlExt>
+-->
+
+        <!-- RIGHT -->
+        <!-- 
+        <syncfusion:TabControlExt Grid.Row="1" Grid.Column="2" CloseButtonType="Both" 
+                                  ShowTabListContextMenu="False" DragMarkerColor="Black"
+                                  TabItemSize="ShrinkToFit" TabStripPlacement="Right">
+            <syncfusion:TabItemExt Header="tabItem1" IsSelected="True" CloseButtonState="Collapsed" AllowPin="True" ShowPin="True">
+                <TextBlock  Text="This is the first tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem2" AllowPin="True">
+                <TextBlock Text="This is the second tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem3" AllowPin="False" ShowPin="True">
+                <TextBlock Text="This is the third tab item." />
+            </syncfusion:TabItemExt>
+        </syncfusion:TabControlExt>
+-->
+        <!-- LEFT -->
+        <!--
+        <syncfusion:TabControlExt Grid.Row="1" Grid.Column="0" CloseButtonType="Both" 
+                                  ShowTabListContextMenu="False" DragMarkerColor="Black"
+                                  TabItemSize="ShrinkToFit" TabStripPlacement="Left">
+            <syncfusion:TabItemExt Header="tabItem1" IsSelected="True" CloseButtonState="Collapsed" AllowPin="True" ShowPin="True">
+                <TextBlock  Text="This is the first tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem2" AllowPin="True">
+                <TextBlock Text="This is the second tab item." />
+            </syncfusion:TabItemExt>
+            <syncfusion:TabItemExt Header="tabItem3" AllowPin="False" ShowPin="True">
+                <TextBlock Text="This is the third tab item." />
+            </syncfusion:TabItemExt>
+        </syncfusion:TabControlExt>
+ -->
+
+        <syncfusion:DockingManager Grid.Row="1" Grid.ColumnSpan="3" syncfusionskin:SfSkinManager.VisualStyle="Blend"
+                                   EnableDocumentTabHeaderEdit="False" TabGroupEnabled="True"
+                                   ContainerMode="TDI" UseDocumentContainer="True" IsVS2010DraggingEnabled="True" IsVS2013SidePanelEnable="True"
+                                   MinimizeButtonEnabled="True" MaximizeButtonEnabled="False"  
+                                   DockTabAlignment="Top">
+            
+            <ContentControl syncfusion:DockingManager.Header="Docking Left"
+                             syncfusion:DockingManager.State="Dock" 
+                            syncfusion:DockingManager.SideInDockedMode= "Left" />
+
+            <ContentControl syncfusion:DockingManager.Header="Docking Right"  
+                             syncfusion:DockingManager.State="Dock" 
+                            syncfusion:DockingManager.SideInDockedMode= "Right"/>
+
+            <ContentControl syncfusion:DockingManager.Header="Bottom"  
+                            syncfusion:DockingManager.SideInDockedMode="Bottom" 
+                            />
+
+            <ContentControl syncfusion:DockingManager.Header="Tabbed1" 
+                            syncfusion:DocumentContainer.ShowPin="True"    
+                            syncfusion:DocumentContainer.AllowPin="True"    
+                            syncfusion:DockingManager.State="Document" 
+                            syncfusion:DockingManager.SideInDockedMode="Tabbed" 
+                            syncfusion:DockingManager.DockToFill="True"
+                            syncfusion:DockingManager.SizetoContentInDock="True"
+                            syncfusion:DockingManager.CanMinimize="False"
+                            syncfusion:DockingManager.CanClose="True"
+                            
+                            />
+            <ContentControl syncfusion:DockingManager.Header="Tabbed2" 
+                            
+                            syncfusion:DockingManager.State="Document" 
+                            syncfusion:DockingManager.SideInDockedMode="Tabbed" 
+                            syncfusion:DockingManager.DockToFill="True"
+                            syncfusion:DockingManager.SizetoContentInDock="True"
+                            syncfusion:DockingManager.CanMinimize="False"
+                            syncfusion:DockingManager.CanClose="True"
+                            syncfusion:DockingManager.ActivateOnClose="True"/>
+        </syncfusion:DockingManager>
+
+    </Grid>
+</Window>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Camera;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -8,7 +10,7 @@ namespace D3DLab.Std.Engine.Core.Shaders {
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct GameStructBuffer {
 
-        public static GameStructBuffer FromCameraState(Components.CameraState state) {
+        public static GameStructBuffer FromCameraState(CameraState state) {
             return new GameStructBuffer(
                       Matrix4x4.Transpose(state.ViewMatrix),
                       Matrix4x4.Transpose(state.ProjectionMatrix),
@@ -37,6 +39,11 @@ namespace D3DLab.Std.Engine.Core.Shaders {
     [StructLayout(LayoutKind.Explicit, Size = 64)]//32 + /* Color vector4 16 */ 16 + ???
     //[StructLayout(LayoutKind.Sequential)]
     public struct LightStructBuffer {
+
+        public static LightStructBuffer From(LightState state) {
+            return new LightStructBuffer(state.Type, state.Position, state.Direction, state.Color, state.Intensity);
+        }
+
         public const int MaxCount = 3;
         public const int RegisterResourceSlot = 1;
 

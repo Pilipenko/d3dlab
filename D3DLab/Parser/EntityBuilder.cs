@@ -1,4 +1,6 @@
 ﻿using D3DLab.Debugger.Modules.OBJFileFormat;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
 using D3DLab.Plugin.Contracts.Parsers;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
@@ -74,7 +76,7 @@ namespace D3DLab.Parser {
                 //    material.Colors[i] = V4Colors.Red;
                 //}
 
-                cc.Add(new ColorComponent { Color = V4Colors.Red });
+                cc.Add(ColorComponent.CreateDiffuse(V4Colors.Red));
                 cc.Add(new ManipulatableComponent());
 
                 entity.AddComponents(cc);

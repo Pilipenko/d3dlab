@@ -1,4 +1,6 @@
-﻿using D3DLab.Std.Engine.Core.Common;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Ext;
+using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using System;
@@ -211,6 +213,56 @@ namespace D3DLab.Std.Engine.Core.Utilities {
                 Positions = positions.ToList(),
                 Indices = indices.ToList(),
                 TextureCoordinates = texture.ToList(),
+            };
+        }
+
+        public static AbstractGeometry3D BuildGeoBox(BoundingBox box) {
+            var indx = new List<int>();
+            var dic = new Dictionary<Vector3, int>();
+
+            var corners = box.GetCorners();
+            var index = 0;
+
+            dic.Add(corners.FarBottomLeft, index);
+            dic.Add(corners.FarBottomRight, ++index);
+            dic.Add(corners.FarTopRight, ++index);
+            dic.Add(corners.FarTopLeft, ++index);
+
+            dic.Add(corners.NearBottomLeft, ++index);
+            dic.Add(corners.NearBottomRight, ++index);
+            dic.Add(corners.NearTopRight, ++index);
+            dic.Add(corners.NearTopLeft, ++index);
+
+            indx.AddRange(new[] {
+                //top
+                dic[corners.FarTopRight], dic[corners.FarTopLeft], dic[corners.NearTopRight],
+                dic[corners.NearTopLeft],dic[corners.NearTopRight],  dic[corners.FarTopLeft],
+
+                //Bottom
+                dic[corners.FarBottomRight],  dic[corners.NearBottomRight], dic[corners.FarBottomLeft],
+                dic[corners.NearBottomLeft], dic[corners.FarBottomLeft],dic[corners.NearBottomRight], 
+
+                //left
+                dic[corners.NearTopLeft], dic[corners.FarTopLeft], dic[corners.FarBottomLeft],
+                dic[corners.NearBottomLeft],  dic[corners.NearTopLeft], dic[corners.FarBottomLeft],
+
+                //right
+                dic[corners.NearTopRight],  dic[corners.NearBottomRight],dic[corners.FarTopRight],
+                dic[corners.NearBottomRight], dic[corners.FarBottomRight], dic[corners.FarTopRight],
+
+                //near
+                dic[corners.NearBottomLeft],  dic[corners.NearBottomRight], dic[corners.NearTopRight],
+                dic[corners.NearBottomLeft],  dic[corners.NearTopRight], dic[corners.NearTopLeft],
+
+                //far
+                dic[corners.FarBottomLeft], dic[corners.FarTopRight], dic[corners.FarBottomRight],
+                dic[corners.FarBottomLeft], dic[corners.FarTopLeft], dic[corners.FarTopRight],
+            });
+
+
+            return new AbstractGeometry3D() {
+                Positions = dic.Keys.ToList(),
+                Indices = indx,
             };
         }
 

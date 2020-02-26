@@ -77,6 +77,12 @@ namespace D3DLab.SDX.Engine.Rendering {
             textcoorCount++;
             return this;
         }
+        public VertexLayoutConstructor AddTexCoorElementAsVector4() {
+            elements.Add(new InputElement(SemanticTexCoorName, textcoorCount, Vector4, GetOffset(), 0, perverxdata, 0));
+            textcoorCount++;
+            return this;
+        }
+
         public VertexLayoutConstructor AddTangentElementAsVector3() {
             elements.Add(new InputElement(SemanticTangentName, 0, Vector3, GetOffset(), 0, perverxdata, 0));
             return this;

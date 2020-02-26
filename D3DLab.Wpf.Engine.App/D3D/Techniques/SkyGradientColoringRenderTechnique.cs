@@ -2,21 +2,22 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Filter;
+using D3DLab.ECS.Shaders;
 using D3DLab.SDX.Engine;
 using D3DLab.SDX.Engine.Components;
 using D3DLab.SDX.Engine.Rendering;
-using D3DLab.SDX.Engine.Rendering.Strategies;
 using D3DLab.SDX.Engine.Shader;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Components.Materials;
-using D3DLab.Std.Engine.Core.Filter;
 using D3DLab.Std.Engine.Core.Shaders;
 using D3DLab.Wpf.Engine.App.D3D.Components;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 
 namespace D3DLab.Wpf.Engine.App.D3D.Techniques {
-    class SkyGradientColoringRenderTechnique : RenderTechniqueSystem, IRenderTechniqueSystem {
+    class SkyGradientColoringRenderTechnique : NestedRenderTechniqueSystem, IRenderTechnique<CustomRenderProperties> {
         const string path = @"D3DLab.Wpf.Engine.App.D3D.Shaders.sky.hlsl";
 
         static readonly D3DShaderTechniquePass pass;
@@ -66,7 +67,7 @@ namespace D3DLab.Wpf.Engine.App.D3D.Techniques {
 
         public IRenderTechniquePass GetPass() => pass;
 
-        protected override void Rendering(GraphicsDevice graphics, GameProperties game) {
+        protected override void Rendering(GraphicsDevice graphics, CustomRenderProperties game) {
             var device = graphics.D3DDevice;
             var context = graphics.ImmediateContext;
 

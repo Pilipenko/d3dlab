@@ -1,4 +1,5 @@
 ﻿using D3DLab.Debugger.Model;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Ext;
 using System;
 using System.Globalization;

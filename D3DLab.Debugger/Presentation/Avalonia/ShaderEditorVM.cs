@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using D3DLab.Debugger.Windows;
+using D3DLab.ECS.Shaders;
 using D3DLab.Std.Engine.Core.Shaders;
 
 namespace D3DLab.Debugger.Presentation.Avalonia {

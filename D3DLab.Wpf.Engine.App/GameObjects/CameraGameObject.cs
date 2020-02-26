@@ -1,5 +1,8 @@
-﻿using D3DLab.Std.Engine.Core;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Systems;
+using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Components;
+using D3DLab.Wpf.Engine.App.D3D;
 using System.Threading;
 
 namespace D3DLab.Wpf.Engine.App.GameObjects {
@@ -20,8 +23,8 @@ namespace D3DLab.Wpf.Engine.App.GameObjects {
 
             {//entities ordering 
                 context.EntityOrder
-                       .RegisterOrder<SDX.Engine.Rendering.RenderSystem>(cameraTag, 0)
-                       .RegisterOrder<Std.Engine.Core.Systems.InputSystem>(cameraTag, 0);
+                       .RegisterOrder<RenderSystem>(cameraTag, 0)
+                       .RegisterOrder<DefaultInputSystem>(cameraTag, 0);
             }
 
             return obj;

@@ -1,4 +1,6 @@
-﻿using D3DLab.Std.Engine.Core;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Utilities;
@@ -6,7 +8,7 @@ using D3DLab.Wpf.Engine.App.GameObjects;
 using System.Numerics;
 
 namespace D3DLab.Wpf.Engine.App {
-    public class CoordinateSystemLinesGameObject : GameObject {
+    public class CoordinateSystemLinesGameObject : Std.Engine.Core.GeometryGameObject {
         public ElementTag Lines { get; private set; }
         public ElementTag[] Arrows { get; private set; }
 

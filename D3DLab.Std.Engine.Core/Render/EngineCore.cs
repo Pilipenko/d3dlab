@@ -1,4 +1,7 @@
-﻿using D3DLab.Std.Engine.Core.Common;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Input;
+using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Input;
 using D3DLab.Std.Engine.Core.Utilities;
@@ -48,7 +51,7 @@ namespace D3DLab.Std.Engine.Core.Render {
         public void Run(IEntityRenderNotify notify) {
             this.notify = notify;
             Initializing();
-            loopTask = Task.Factory.StartNew((Action)Loop, TaskCreationOptions.LongRunning);
+            loopTask = Task.Factory.StartNew((Action)Loop, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);            
         }
 
         protected virtual void OnSynchronizing() {
@@ -64,8 +67,15 @@ namespace D3DLab.Std.Engine.Core.Render {
             imanager.Synchronize(Thread.CurrentThread.ManagedThreadId);
 
             var speed = new Stopwatch();
-            var engineInfoTag = Context.GetEntityManager().GetEntities()
-                    .Single(x => x.Has<EngineInfoBuilder.PerfomanceComponent>()).Tag;
+            var any = Context
+                .GetEntityManager()
+                .GetEntities()
+                .Where(x => x.Has<PerfomanceComponent>());
+            ElementTag engineInfoTag;
+
+            if (any.Any()) {
+                engineInfoTag = any.Single().Tag;
+            }
 
             double millisec = oneFrameMilliseconds;
             while (Window.IsActive && !token.IsCancellationRequested) {
@@ -87,10 +97,8 @@ namespace D3DLab.Std.Engine.Core.Render {
 
                 millisec = speed.ElapsedMilliseconds;
 
-                var perfomance = eman.GetEntity(engineInfoTag)
-                    .GetComponent<EngineInfoBuilder.PerfomanceComponent>();
-
-                perfomance.Update(millisec, (int)(total / millisec));
+                eman.GetEntity(engineInfoTag)
+                    .UpdateComponent(PerfomanceComponent.Create(millisec, (int)(total / millisec)));
                 //Debug.WriteLine($"FPS {(int)(total / speed.ElapsedMilliseconds)} / {speed.ElapsedMilliseconds} ms");
 
                 notify.NotifyRender(eman.GetEntities().ToArray());
@@ -110,11 +118,11 @@ namespace D3DLab.Std.Engine.Core.Render {
             var id = Thread.CurrentThread.ManagedThreadId;
 
             Octree.Synchronize(id);
-            Octree.Draw(Context.GetEntityManager());
+            //Octree.Draw(Context.GetEntityManager());
             
             emanager.Synchronize(id);
 
-            var snapshot = new SceneSnapshot(Window, Context, notificator, viewport, Octree, ishapshot, TimeSpan.FromMilliseconds(millisec));
+            var snapshot = new SceneSnapshot(Window, notificator, viewport, Octree, ishapshot, TimeSpan.FromMilliseconds(millisec));
             foreach (var sys in Context.GetSystemManager().GetSystems()) {
                 try {
                     sys.Execute(snapshot);

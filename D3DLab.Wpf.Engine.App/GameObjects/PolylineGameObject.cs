@@ -1,4 +1,6 @@
-﻿using D3DLab.SDX.Engine.Components;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.SDX.Engine.Components;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Components;
 using System.Collections.Generic;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Numerics;
 
 namespace D3DLab.Wpf.Engine.App.GameObjects {
-    public class PolylineGameObject : GameObject {
+    public class PolylineGameObject : Std.Engine.Core.GeometryGameObject {
         public ElementTag Tag { get; }
 
         public PolylineGameObject(ElementTag tag1):base("poly") {

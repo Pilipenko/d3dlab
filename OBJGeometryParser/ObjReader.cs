@@ -4,6 +4,7 @@ using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.MeshFormats;
 using D3DLab.Std.Engine.Core.Utilities.Helix;
+using D3DLab.ECS.Ext;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

@@ -1,4 +1,5 @@
-﻿using D3DLab.Std.Engine.Core.Ext;
+﻿using D3DLab.ECS.Ext;
+using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Utilities;
 using System;
 using System.Collections.Generic;

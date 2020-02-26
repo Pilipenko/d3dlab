@@ -1,34 +1,33 @@
-﻿using D3DLab.SDX.Engine.Components;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Camera;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Filter;
+using D3DLab.ECS.Shaders;
+using D3DLab.SDX.Engine.Components;
 using D3DLab.SDX.Engine.D2;
 using D3DLab.SDX.Engine.Shader;
-using D3DLab.Std.Engine.Core;
-using D3DLab.Std.Engine.Core.Components;
-using D3DLab.Std.Engine.Core.Components.Materials;
-using D3DLab.Std.Engine.Core.Filter;
-using D3DLab.Std.Engine.Core.Shaders;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace D3DLab.SDX.Engine.Rendering {
-    public interface IRenderTechniqueSystem {
+    public interface IRenderProperties {
+       CameraState CameraState { get; }
+    }
+
+    public interface IRenderTechnique<TProperties> where TProperties : IRenderProperties {
         IRenderTechniquePass GetPass();
         /// <summary>
         /// remove all entities from Technique
         /// </summary>
         void Cleanup();
-        void Render(GraphicsDevice Graphics, GameProperties game);
+        void Render(GraphicsDevice Graphics, TProperties game);
         void RegisterEntity(GraphicEntity entity);
         bool IsAplicable(GraphicEntity entity);
     }
     
 
-    public abstract class RenderTechniqueSystem {
+    public abstract class D3DAbstractRenderTechnique<TProperties> where TProperties : IRenderProperties {
         protected readonly LinkedList<GraphicEntity> entities;
         protected RasterizerStateDescription rasterizerStateDescription;
         protected BlendStateDescription blendStateDescription;
@@ -36,13 +35,13 @@ namespace D3DLab.SDX.Engine.Rendering {
 
         readonly EntityHasSet entityHasSet;
 
-        protected RenderTechniqueSystem(EntityHasSet entityHasSet) {
+        protected D3DAbstractRenderTechnique(EntityHasSet entityHasSet) {
            // pass = new HashSet<IRenderTechniquePass>();
             entities = new LinkedList<GraphicEntity>();
             this.entityHasSet = entityHasSet;
         }
 
-        public void Render(GraphicsDevice graphics, GameProperties game) {
+        public void Render(GraphicsDevice graphics, TProperties game) {
             Rendering(graphics, game);
         }
         
@@ -51,7 +50,7 @@ namespace D3DLab.SDX.Engine.Rendering {
         }
 
 
-        protected abstract void Rendering(GraphicsDevice graphics, GameProperties game);
+        protected abstract void Rendering(GraphicsDevice graphics, TProperties game);
         
         public void RegisterEntity(GraphicEntity entity) {
             entities.AddLast(entity);
@@ -90,23 +89,7 @@ namespace D3DLab.SDX.Engine.Rendering {
             context.GeometryShader.Set(render.GeometryShader.Get());
             context.PixelShader.Set(render.PixelShader.Get());
         }
-        protected static void Render(GraphicsDevice graphics, DeviceContext context, D3DRenderComponent render, int vertexSize) {
-
-            if (render.TransformWorldBuffer.HasValue) {
-                context.VertexShader.SetConstantBuffer(TransforStructBuffer.RegisterResourceSlot, render.TransformWorldBuffer.Get());
-            }
-
-            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(render.VertexBuffer.Get(), vertexSize, 0));
-            context.InputAssembler.SetIndexBuffer(render.IndexBuffer.Get(), SharpDX.DXGI.Format.R32_UInt, 0);
-
-            context.InputAssembler.InputLayout = render.Layout.Get();
-            context.InputAssembler.PrimitiveTopology = render.PrimitiveTopology;
-            graphics.UpdateRasterizerState(render.RasterizerState.GetDescription());
-
-            context.OutputMerger.SetDepthStencilState(render.DepthStencilState.Get(), 0);
-            var blendFactor = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 0);
-            context.OutputMerger.SetBlendState(render.BlendingState.Get(), blendFactor, -1);
-        }
+        
 
         protected ShaderResourceView[] ConvertToResources(TexturedMaterialComponent material, TextureLoader loader) {
             var resources = new ShaderResourceView[material.Images.Length];
@@ -116,21 +99,6 @@ namespace D3DLab.SDX.Engine.Rendering {
             }
             return resources;
         }
-
-        protected void UpdateTransformWorld(GraphicsDevice graphics, ID3DTransformWorldRenderComponent render, TransformComponent transform) {
-            if (transform.IsModified) {
-                var tr =  TransforStructBuffer.ToTranspose(transform.MatrixWorld);
-
-                if (render.TransformWorldBuffer.HasValue) {
-                    var buff = render.TransformWorldBuffer.Get();
-                    graphics.UpdateDynamicBuffer(ref tr, buff);                   
-                } else {
-                    var buff = graphics.CreateDynamicBuffer(ref tr, Unsafe.SizeOf<TransforStructBuffer>());
-                    render.TransformWorldBuffer.Set(buff);
-                }
-
-                transform.IsModified = false;
-            }
-        }
+       
     }
 }

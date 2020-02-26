@@ -1,10 +1,10 @@
 ﻿namespace D3DLab.SDX.Engine {
-    internal static class SDXMathematicsEx {
-        internal static SharpDX.Vector3 ToSDXVector3(this System.Numerics.Vector3 v) {
+    public static class SDXMathematicsEx {
+        public static SharpDX.Vector3 ToSDXVector3(this System.Numerics.Vector3 v) {
             return new SharpDX.Vector3(v.X, v.Y, v.Z);
         }
 
-        internal static SharpDX.Matrix ToSDXMatrix(this System.Numerics.Matrix4x4 m) {
+        public static SharpDX.Matrix ToSDXMatrix(this System.Numerics.Matrix4x4 m) {
             return new SharpDX.Matrix(
                 m.M11,
                 m.M12,
@@ -35,11 +35,15 @@
             //return new System.Numerics.Vector4(color.R, color.G, color.B, color.A);
         }
 
-        internal static System.Numerics.Vector3 ToNVector3(this SharpDX.Vector3 v) {
+        public static System.Numerics.Vector3 ToNVector3(this SharpDX.Vector3 v) {
             return new System.Numerics.Vector3(v.X, v.Y, v.Z);
         }
 
-        internal static System.Numerics.Matrix4x4 ToMatrix4x4(this SharpDX.Matrix m) {
+        public static System.Numerics.Vector2 ToNVector2(this SharpDX.Vector2 v) {
+            return new System.Numerics.Vector2(v.X, v.Y);
+        }
+
+        public static System.Numerics.Matrix4x4 ToMatrix4x4(this SharpDX.Matrix m) {
             return new System.Numerics.Matrix4x4(
                 m.M11,
                 m.M12,

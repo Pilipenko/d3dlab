@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,11 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Animation\Shaders\Animation.hlsl" />
-    <None Remove="Animation\Shaders\Common.hlsl" />
-    <None Remove="Rendering\Shaders\Custom\colored_vertex.hlsl" />
-    <None Remove="Rendering\Shaders\Custom\Lines.hlsl" />
-    <None Remove="Rendering\Shaders\Custom\sphere_point.hlsl" />
     <None Remove="Rendering\Shaders\Game.hlsl" />
     <None Remove="Rendering\Shaders\Light.hlsl" />
     <None Remove="Rendering\Shaders\Math.hlsl" />
@@ -27,11 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Animation\Shaders\Animation.hlsl" />
-    <EmbeddedResource Include="Animation\Shaders\Common.hlsl" />
-    <EmbeddedResource Include="Rendering\Shaders\Custom\colored_vertex.hlsl" />
-    <EmbeddedResource Include="Rendering\Shaders\Custom\sphere_point.hlsl" />
-    <EmbeddedResource Include="Rendering\Shaders\Custom\Lines.hlsl" />
     <EmbeddedResource Include="Rendering\Shaders\Game.hlsl" />
     <EmbeddedResource Include="Rendering\Shaders\Light.hlsl" />
     <EmbeddedResource Include="Rendering\Shaders\Math.hlsl" />
@@ -39,20 +29,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpDX" Version="4.1.0" />
-    <PackageReference Include="SharpDX.D3DCompiler" Version="4.1.0" />
-    <PackageReference Include="SharpDX.Direct2D1" Version="4.1.0" />
-    <PackageReference Include="SharpDX.Direct3D11" Version="4.1.0" />
-    <PackageReference Include="SharpDX.Direct3D11.Effects" Version="4.1.0" />
-    <PackageReference Include="SharpDX.DXGI" Version="4.1.0" />
-    <PackageReference Include="SharpDX.Mathematics" Version="4.1.0" />
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11.Effects" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.5.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\D3DLab.Std.Engine.Core\D3DLab.Std.Engine.Core.csproj" />
+    <ProjectReference Include="..\D3DLab.ECS\D3DLab.ECS.csproj" />
   </ItemGroup>
 
   <ItemGroup>

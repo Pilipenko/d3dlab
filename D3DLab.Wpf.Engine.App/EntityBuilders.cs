@@ -1,4 +1,7 @@
-﻿using D3DLab.SDX.Engine.Components;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Ext;
+using D3DLab.ECS.Components;
+using D3DLab.SDX.Engine.Components;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
@@ -28,9 +31,7 @@ namespace D3DLab.Wpf.Engine.App {
                 .CreateEntity(new ElementTag("GroupGeometry" + Guid.NewGuid()))
                 .AddComponent(group)
                 .AddComponent(new D3DTriangleColoredVertexRenderComponent())
-                .AddComponent(new TransformComponent() {
-                    MatrixWorld = Matrix4x4.CreateTranslation(Vector3.UnitY * 30)
-                })
+                .AddComponent(TransformComponent.Create(Matrix4x4.CreateTranslation(Vector3.UnitY * 30)))
                 .Tag;
         }
 
@@ -57,7 +58,7 @@ namespace D3DLab.Wpf.Engine.App {
             return new SDX.Engine.Components.D3DTriangleColoredVertexRenderComponent();
         }
         public static TransformComponent GetTransformation() {
-            return new TransformComponent();
+            return TransformComponent.Identity();
         }
 
         #endregion
@@ -72,7 +73,7 @@ namespace D3DLab.Wpf.Engine.App {
             return manager
                 .CreateEntity(new ElementTag("Geometry" + Guid.NewGuid()))
                 .AddComponent(geo)
-                .AddComponent(new TransformComponent())
+                .AddComponent(TransformComponent.Identity())
                 .AddComponent(GetObjGroupsRender())
                 .Tag;
         }

@@ -1,4 +1,7 @@
-﻿using D3DLab.SDX.Engine.Components;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.Physics.Engine;
+using D3DLab.SDX.Engine.Components;
 using D3DLab.SDX.Engine.Rendering.Strategies;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
@@ -29,7 +32,8 @@ namespace D3DLab.Wpf.Engine.App {
         */
 
         public static SkyGameObject Create(IEntityManager manager) {
-            var resources = Path.Combine("../../../../D3DLab.Wpf.Engine.App/Resources/sky/");
+            var resources = Path.Combine(@"Resources\sky\");
+            //../../../../D3DLab.Wpf.Engine.App/Resources/sky/
             var tag = new ElementTag("SkyDome");
             var plane = new ElementTag("SkyPlane");
 
@@ -58,7 +62,7 @@ namespace D3DLab.Wpf.Engine.App {
                 .AddComponents(new IGraphicComponent[] {
                     new D3DSkyRenderComponent() { },
                     geo,
-                    new TransformComponent(),
+                    TransformComponent.Identity(),
                     new GradientMaterialComponent(),
                     new FollowUpCameraPositionComponent()
                 });
@@ -76,7 +80,7 @@ namespace D3DLab.Wpf.Engine.App {
                         Indices = planemesh.Indices.ToImmutableArray(),
                         TextureCoordinates = planemesh.TextureCoordinates.ToImmutableArray(),
                     },
-                    new TransformComponent(),
+                   TransformComponent.Identity(),
                     new FollowUpCameraPositionComponent(),
                     new SkyPlaneParallaxAnimationComponent()
                 });
@@ -117,15 +121,48 @@ namespace D3DLab.Wpf.Engine.App {
          * http://vterrain.org/LOD/Implementations/
          * 
          * https://apps.dtic.mil/dtic/tr/fulltext/u2/a439499.pdf
+         * 
+         * TODO!!!!
+         * https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter02.html
+         * http://hhoppe.com/geomclipmap.pdf
+         * http://thedemonthrone.ca/projects/rendering-terrain/rendering-terrain-part-8-adding-tessellation/
+         * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.406.5339&rep=rep1&type=pdf
+         * http://www.garagegames.com/community/forums/viewthread/74768
+         * http://web.engr.oregonstate.edu/~mjb/cs519/Projects/Papers/ShaderTricks.pdf
+         * https://github.com/gamereat/DX11_Procedural_Terrain
          */
 
         public TerrainGameObject(ElementTag tag) : base(tag, typeof(TerrainGameObject).Name) {
         }
 
+        public static TerrainGameObject CreateClipmaps(IEntityManager manager) {
+            var tag = new ElementTag("Terrain");
+
+            manager.CreateEntity(tag)
+                   .AddComponents(new IGraphicComponent[] {
+                       new D3DTerrainRenderComponent() {
+                            CanRender = false
+                       },
+                       new Systems.TerrainConfigurationComponent {
+                            Width = 256,
+                            Height = 256,
+                       },
+                       new TransformComponent(),
+                       new D3DTexturedMaterialSamplerComponent(),
+                       new ClipmapsTerrainComponent {
+                           
+                       },
+
+                   });
+
+            return new TerrainGameObject(tag);
+        }
+
         public static TerrainGameObject Create(IEntityManager manager) {
             var tag = new ElementTag("Terrain");
 
-            var resources = Path.Combine("../../../../D3DLab.Wpf.Engine.App/Resources/terrain/");
+            var resources = Path.Combine(@"Resources\terrain\");
+            //"../../../../D3DLab.Wpf.Engine.App/Resources/terrain/"
             var grass = Path.Combine(resources, "1.jpg");
             var slope = Path.Combine(resources, "slope.bmp");
             var rock = Path.Combine(resources, "rock-lambertian.jpg");
@@ -144,8 +181,8 @@ namespace D3DLab.Wpf.Engine.App {
                         CanRender = false
                     },
                     new Systems.TerrainConfigurationComponent {
-                        Width = 1025,
-                        Height = 1025, 
+                        Width = 256,
+                        Height = 256,
                     },
                     new D3DTexturedMaterialSamplerComponent(
                         new System.IO.FileInfo(seafloor),
@@ -160,13 +197,14 @@ namespace D3DLab.Wpf.Engine.App {
                         new System.IO.FileInfo(snow),
                         new System.IO.FileInfo(Path.Combine(resources,"distance01n.bmp"))
                         ),
-                    new TransformComponent(),
+                    TransformComponent.Identity(),
+                    PhysicalComponentFactory.CreateStaticMesh()
                 });
 
             return new TerrainGameObject(tag);
         }
 
-        
+
         static Vector4[] LoadColourMap(string fullPath, int width, int height) {
             Bitmap colourBitMap = null;
             try {

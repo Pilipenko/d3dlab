@@ -1,4 +1,5 @@
 ﻿using D3DLab.Debugger.IDE;
+using D3DLab.ECS.Shaders;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Shaders;
 using System;

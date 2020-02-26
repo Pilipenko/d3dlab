@@ -1,4 +1,4 @@
-﻿using D3DLab.Std.Engine.Core;
+﻿using D3DLab.ECS;
 
 namespace D3DLab.SDX.Engine.Components {
     public interface ID3DRenderable : IGraphicComponent {

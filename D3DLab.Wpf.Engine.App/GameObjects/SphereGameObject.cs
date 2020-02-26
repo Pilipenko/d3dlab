@@ -1,4 +1,6 @@
-﻿using D3DLab.SDX.Engine.Components;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.SDX.Engine.Components;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
@@ -41,7 +43,7 @@ namespace D3DLab.Wpf.Engine.App.GameObjects {
                    Color = data.Color,
                })
                .AddComponent(new D3DSpherePointRenderComponent())
-               .AddComponent(new TransformComponent())
+               .AddComponent(TransformComponent.Identity())
                .Tag;
 
 

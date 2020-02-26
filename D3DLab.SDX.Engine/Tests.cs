@@ -5,7 +5,7 @@ using System.Text;
 using SharpDX;
 
 namespace D3DLab.SDX.Engine {
-    public static class Tests {
+    static class Tests {
 
         public static void BoundingBoxTest(System.Numerics.Vector3[] vectors) {
 

@@ -1,4 +1,6 @@
 ﻿using D3DLab.Debugger.Windows;
+using D3DLab.ECS.Common;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Ext;
 using System;
 using System.Collections.Generic;
@@ -333,7 +335,7 @@ namespace D3DLab.Debugger.Presentation.PropertiesEditor {
         void Analyze(object com, GroupViewProperty property, PropertyInfo pr, HashSet<int> hashed) {
             var name = pr.Name;
             try {
-                if (pr.CustomAttributes.Any(x => x.AttributeType == typeof(Std.Engine.Core.Components.IgnoreDebugingAttribute))) {
+                if (pr.CustomAttributes.Any(x => x.AttributeType == typeof(IgnoreDebugingAttribute))) {
                     return;
                 }
 

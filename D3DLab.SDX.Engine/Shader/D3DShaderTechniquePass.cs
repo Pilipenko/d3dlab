@@ -1,8 +1,7 @@
-﻿using D3DLab.Std.Engine.Core.Shaders;
+﻿using D3DLab.ECS.Shaders;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 
 namespace D3DLab.SDX.Engine.Shader {
     /// <summary>
@@ -45,5 +44,26 @@ namespace D3DLab.SDX.Engine.Shader {
             }
             IsCompiled = true;
         }
+
+        public void ActivateDebugMode(DirectoryInfo dir) {
+            if (!dir.Exists) {
+                dir.Create();
+            }
+            var watcher = new FileSystemWatcher(dir.FullName, "*.hlsl");
+            watcher.Changed += OmDirectory_Changed;
+            foreach(var info in ShaderInfos) {
+                File.WriteAllText(Path.Combine(dir.FullName, $"{info.Name}_{info.Stage}_shader.hlsl"), info.ReadText());
+            }
+        }
+
+        private void OmDirectory_Changed(object sender, FileSystemEventArgs e) {
+            foreach(var info in ShaderInfos) {
+                var key = $"{info.Name}_{info.Stage}";
+                if (e.Name.Contains(key)) {
+                    info.WriteText(File.ReadAllText(e.FullPath));
+                    ClearCache();
+                }
+            }
+        }   
     }
 }

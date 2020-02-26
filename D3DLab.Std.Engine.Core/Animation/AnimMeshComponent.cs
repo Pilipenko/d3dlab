@@ -9,6 +9,7 @@ using D3DLab.Std.Engine.Core.Animation.Formats;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Animation;
 using System.Collections.Generic;
+using D3DLab.ECS;
 
 namespace D3DLab.SDX.Engine.Animation {
     public class MeshAnimationComponent : GraphicComponent {

@@ -1,4 +1,8 @@
-﻿using D3DLab.Std.Engine.Core.Common;
+﻿using D3DLab.ECS;
+using D3DLab.ECS.Camera;
+using D3DLab.ECS.Ext;
+using D3DLab.ECS.Input;
+using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Input;
@@ -9,13 +13,18 @@ using System;
 using System.Numerics;
 
 namespace D3DLab.Std.Engine.Core {
-    public class SceneSnapshot {
+    public interface IViewport {
+        Vector3 ScreenToV3(Vector2 screen, CameraState camera, IAppWindow window);
+        Ray UnProject(Vector2 screen, CameraState camera, IAppWindow window);
+    }
+
+    public class SceneSnapshot : ISceneSnapshot {
         public IViewport Viewport { get; }
-        public IContextState ContextState { get; }
+      //  public IContextState ContextState { get; }
         public IManagerChangeNotify Notifier { get; }
         public IAppWindow Window { get; }
 
-        public InputSnapshot Snapshot { get; }
+        public InputSnapshot InputSnapshot { get; }
         public TimeSpan FrameRateTime { get; }
 
         public ElementTag CurrentCameraTag { get; private set; }
@@ -25,17 +34,16 @@ namespace D3DLab.Std.Engine.Core {
 
         public IOctree Octree { get; }
 
-        public SceneSnapshot(IAppWindow win, IContextState state, IManagerChangeNotify notifier,
+        public SceneSnapshot(IAppWindow win, IManagerChangeNotify notifier,
             IViewport viewport,
             IOctree octree, InputSnapshot isnapshot, TimeSpan time) {
             Viewport = viewport;
-            ContextState = state;
             Notifier = notifier;
-            Snapshot = isnapshot;
+            InputSnapshot = isnapshot;
             FrameRateTime = time;
             Window = win;
             Lights = new LightState[LightStructBuffer.MaxCount];
-            Octree  = octree;
+            Octree = octree;
         }
 
         public void UpdateCamera(ElementTag tag, CameraState state) {
@@ -47,24 +55,7 @@ namespace D3DLab.Std.Engine.Core {
         }
     }
 
-    public interface IRenderState : IDisposable {
-        IContextState ContextState { get; }
-        float Ticks { get; }
-        IAppWindow Window { get; }
-        CameraState Camera { get; }
-    }
 
-    public enum LightTypes : uint {
-        Undefined = 0,
-        Ambient = 1,
-        Point = 2,
-        Directional = 3
-    }
-
-    public interface IViewport {
-        Vector3 ScreenToV3(Vector2 screen, CameraState camera, IAppWindow window);
-        Ray UnProject(Vector2 screen, CameraState camera, IAppWindow window);
-    }
 
     public class Viewport {
 

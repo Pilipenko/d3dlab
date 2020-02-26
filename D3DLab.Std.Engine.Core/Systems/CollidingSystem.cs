@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core.Components;
 using D3DLab.Std.Engine.Core.Ext;
 using D3DLab.Std.Engine.Core.Input.Commands;
@@ -23,12 +26,16 @@ namespace D3DLab.Std.Engine.Core.Systems {
         public Vector3 IntersectionPositionWorld { get; set; }
     }
 
-    public class CollidingSystem : BaseEntitySystem, IGraphicSystem {
-        protected override void Executing(SceneSnapshot snapshot) {
-            var colliding = new Colliding(snapshot);
-            var emanager = snapshot.ContextState.GetEntityManager();
+    public class CollidingSystem : BaseEntitySystem, IGraphicSystem, IGraphicSystemContextDependent {
+        public IContextState ContextState { get; set; }
 
-            foreach (var ev in snapshot.Snapshot.Events) {
+        protected override void Executing(ISceneSnapshot ss) {
+            var snapshot = (SceneSnapshot)ss;
+
+            var colliding = new Colliding(snapshot, ContextState);
+            var emanager = ContextState.GetEntityManager();
+
+            foreach (var ev in snapshot.InputSnapshot.Events) {
                 switch (ev) {
                     case CaptureTargetUnderMouseCameraCommand capture:
                         if (colliding.TryToColliding(capture.ScreenPosition, out var collidedWith)) {
@@ -38,7 +45,7 @@ namespace D3DLab.Std.Engine.Core.Systems {
                                 entity.AddComponent(new CapturedToManipulateComponent() {
                                     CapturePointWorld = collidedWith.IntersectionPositionWorld,
                                 });
-                                snapshot.Snapshot.RemoveEvent(ev);
+                                snapshot.InputSnapshot.RemoveEvent(ev);
                             }
                         }
                         break;                   
@@ -64,9 +71,11 @@ namespace D3DLab.Std.Engine.Core.Systems {
 
         class Colliding {
             readonly SceneSnapshot snapshot;
+            readonly IContextState contextState;
 
-            public Colliding(SceneSnapshot snapshot) {
+            public Colliding(SceneSnapshot snapshot, IContextState contextState) {
                 this.snapshot = snapshot;
+                this.contextState = contextState;
             }
 
             public bool TryToColliding(Vector2 pos, out RayCollidedWithEntityComponent collided) {
@@ -78,7 +87,7 @@ namespace D3DLab.Std.Engine.Core.Systems {
                 Vector3 intersecWorld = Vector3.Zero;
                 //find object
                 var res = snapshot.Octree.GetColliding(rayWorld, tag => {
-                    var entity = snapshot.ContextState.GetEntityManager().GetEntity(tag);
+                    var entity = contextState.GetEntityManager().GetEntity(tag);
 
                     var renderable = entity.GetComponents<IRenderableComponent>().Any(x => x.CanRender);
                     if (!renderable) {

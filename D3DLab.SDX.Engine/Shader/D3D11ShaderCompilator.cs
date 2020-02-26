@@ -1,7 +1,6 @@
-﻿using D3DLab.Std.Engine.Core.Shaders;
+﻿using D3DLab.ECS.Shaders;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
-using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +8,7 @@ using System.Text;
 
 namespace D3DLab.SDX.Engine.Shader {
     [Flags]
-    internal enum ShaderStages : byte {
+    public enum ShaderStages : byte {
         /// <summary>
         /// No stages.
         /// </summary>
@@ -40,11 +39,17 @@ namespace D3DLab.SDX.Engine.Shader {
         Compute = 1 << 5,
     }
 
-    internal class D3DInclude : Include {
-        Stream stream;
-        readonly Dictionary<string, string> resources;
+    public interface IIncludeResourse {
+        string Key { get; }
+        Stream GetResourceStream();
+    }
 
-        public D3DInclude(Dictionary<string, string> resources) {
+    public class D3DIncludeAdapter : Include {
+
+        Stream stream;
+        readonly Dictionary<string, IIncludeResourse> resources;
+
+        public D3DIncludeAdapter(Dictionary<string, IIncludeResourse> resources) {
             this.resources = resources;
         }
 
@@ -53,9 +58,15 @@ namespace D3DLab.SDX.Engine.Shader {
         }
 
         //file name - #include "./Shaders/Common.fx"
+        //public Stream Open(IncludeType type, string fileName, Stream parentStream) {
+        //    var key = Path.GetFileNameWithoutExtension(fileName);
+        //    stream = this.GetType().Assembly.GetManifestResourceStream(resources[key]);
+
+        //    return stream;
+        //}
         public Stream Open(IncludeType type, string fileName, Stream parentStream) {
             var key = Path.GetFileNameWithoutExtension(fileName);
-            stream = this.GetType().Assembly.GetManifestResourceStream(resources[key]);
+            stream = resources[key].GetResourceStream();
 
             return stream;
         }
@@ -145,11 +156,12 @@ namespace D3DLab.SDX.Engine.Shader {
 
     public class D3DShaderCompilator : IShaderCompilator {
         readonly D3D11Compilator compilator;
-        readonly Dictionary<string, string> resources;
+        //readonly Dictionary<string, string> resources;
+        Include include;
 
         public D3DShaderCompilator() {
             compilator = new D3D11Compilator();
-            resources = new Dictionary<string, string>();
+          //  resources = new Dictionary<string, string>();
         }
 
         public void CompileWithPreprocessing(IShaderInfo info) {
@@ -158,7 +170,7 @@ namespace D3DLab.SDX.Engine.Shader {
         }
         public void CompileWithPreprocessing(IShaderInfo info, string text) {
             info.ReadText();
-            var preprocessed = compilator.Preprocess(text, new D3DInclude(resources));
+            var preprocessed = compilator.Preprocess(text, include ?? new D3DIncludeAdapter(new Dictionary<string, IIncludeResourse>()));
             var bytes = Encoding.UTF8.GetBytes(preprocessed);
             bytes = compilator.Compile(bytes, info.EntryPoint, ConvertToShaderStage(info.Stage), info.Name);
             info.WriteCompiledBytes(bytes);
@@ -185,8 +197,9 @@ namespace D3DLab.SDX.Engine.Shader {
             return (ShaderStages)Enum.Parse(typeof(ShaderStages), stage, true);
         }
 
-        internal void AddIncludeMapping(string include, string resource) {
-            resources.Add(include, resource);
+
+        public void AddInclude(Include include) {
+            this.include = include;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace D3DLab.Std.Engine.Core.Ext {
         public NullVerificationLock() {
             this.loker = new object();
         }
-        public T Execute(ref T obj, Func<T> create) {
+        public T Create(ref T obj, Func<T> create) {
             if (obj == null) {
                 lock (loker) {
                     if (obj == null) {
@@ -18,6 +18,15 @@ namespace D3DLab.Std.Engine.Core.Ext {
                 }
             }
             return obj;
+        }
+        public void Destroy(ref T obj, Func<T> destroy) {
+            if (obj != null) {
+                lock (loker) {
+                    if (obj != null) {
+                        obj = destroy();
+                    }
+                }
+            }
         }
     }
 }

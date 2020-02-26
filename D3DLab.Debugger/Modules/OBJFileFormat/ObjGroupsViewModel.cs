@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using D3DLab.ECS;
+using D3DLab.ECS.Components;
+using D3DLab.ECS.Ext;
 using D3DLab.Std.Engine.Core;
 using D3DLab.Std.Engine.Core.Common;
 using D3DLab.Std.Engine.Core.Components;
@@ -40,21 +43,22 @@ namespace D3DLab.Debugger.Modules.OBJFileFormat {
         }
 
         static void Win_Closed(object sender, EventArgs e) {
-            loker.Execute(ref win, Cleanup);
+            loker.Destroy(ref win, Cleanup);
         }
 
         static ObjDetailsWindow Cleanup() {
+            win.Closed -= Win_Closed;
             return null;
         }
 
         public static void Open(CompositeGameObjectFromFile gobj, IEntityManager manager) {
-            loker.Execute(ref win, Create);
+            loker.Create(ref win, Create);
             var vm = ((ObjGroupsViewModel)win.DataContext);
             vm.Fill(gobj, manager);
             win.Show();
         }
         public static void Close() {
-            loker.Execute(ref win, Cleanup);
+            //loker.Destroy(ref win, Cleanup);
             win.Close();
         }
     }
@@ -213,24 +217,31 @@ namespace D3DLab.Debugger.Modules.OBJFileFormat {
                     new Regex(item.Filter, RegexOptions.Compiled),
                     new Vector4(color.ScR, color.ScG, color.ScB, color.ScA));
             }
-
-            foreach (var item in groups) {
-                var match = regex.FirstOrDefault(x => x.Item1.IsMatch(item.Name));
-                if (match.IsNotNull()) {
-                    ChangeColor(item, match.Item2);
+            //keep the order of regex
+            foreach (var reg in regex) {
+                foreach (var item in groups) {
+                    var match = reg.Item1.IsMatch(item.Name);
+                    if (match) {
+                        ChangeColor(item, reg.Item2);
+                    }
                 }
             }
+
+
+            //foreach (var item in groups) {
+            //    var match = regex.FirstOrDefault(x => x.Item1.IsMatch(item.Name));
+            //    if (match.IsNotNull()) {
+            //        ChangeColor(item, match.Item2);
+            //    }
+            //}
 
             entityManager.PushSynchronization();
         }
 
         void ChangeColor(ObjGroupViewItem item, Vector4 color) {
-            var comp = entityManager
+            entityManager
                 .GetEntity(item.Entity)
-                .GetComponent<ColorComponent>();
-            comp.Color = color;
-            comp.IsModified = true;
-            //entityManager.PushSynchronization();
+                .UpdateComponent(ColorComponent.CreateDiffuse(color));
         }
 
         ObjGroupViewItem GetCurrentItem() {
@@ -291,7 +302,7 @@ namespace D3DLab.Debugger.Modules.OBJFileFormat {
             RisePropertyChanged(nameof(ItemsCount));
 
             var count = 0;
-            foreach(var i in listView) {
+            foreach (var i in listView) {
                 count += ((ObjGroupViewItem)i).Count;
             }
             AllGroupsCount = count;
